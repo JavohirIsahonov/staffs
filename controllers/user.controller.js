@@ -213,8 +213,9 @@ ${inviteLink}
 ${inviteLink}
             `;
 
-            await sendMessage(process.env.CHAT_ID, uzMessage);
-            await sendMessage(process.env.CHAT_ID, ruMessage);
+            // 📩 foydalanuvchining telegram_id orqali bot yuboradi
+            await sendMessage(data.telegram_id, uzMessage);
+            await sendMessage(data.telegram_id, ruMessage);
         }
 
         res.send(data);
