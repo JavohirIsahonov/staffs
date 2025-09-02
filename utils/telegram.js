@@ -20,13 +20,13 @@ const createOneTimeInviteLink = async () => {
   }
 };
 
-// Send message
+// Send message (userga yuborish uchun)
 const sendMessage = async (chatId, text) => {
   try {
     await axios.post(
       `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`,
       {
-        chat_id: chatId,
+        chat_id: chatId, // bu user chat_id bo‘ladi
         text: text,
         parse_mode: "HTML"
       }
@@ -37,7 +37,18 @@ const sendMessage = async (chatId, text) => {
   }
 };
 
+// Userga invite link yuborish
+const sendInviteLinkToUser = async (userChatId) => {
+  try {
+    const link = await createOneTimeInviteLink();
+    await sendMessage(userChatId, `Siz uchun yaratilgan guruhga taklif linki:\n${link}`);
+  } catch (err) {
+    console.error("❌ Error sending invite link:", err.message);
+  }
+};
+
 module.exports = {
   createOneTimeInviteLink,
-  sendMessage
+  sendMessage,
+  sendInviteLinkToUser
 };
