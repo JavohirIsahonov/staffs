@@ -127,7 +127,7 @@ exports.delete = async (req, res) => {
   const id = req.params.userId
 
   try {
-    const data = await User.findByIdAndRemove(id)
+    const data = await User.findByIdAndDelete(id)
     if (!data) {
       return res.status(404).send({
         message: "User not found with id " + id,
