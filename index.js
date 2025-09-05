@@ -5,6 +5,7 @@ const connectDB = require('./config/db');
 const userRoutes = require('./routes/user.routes');
 const messageRoutes = require('./routes/message.routes');
 const cors = require('cors');
+const path = require('path');
 
 // Enable CORS for all routes
 app.use(cors());
@@ -16,6 +17,9 @@ dotenv.config();
 
 // Connect to the database
 connectDB();
+
+// Serve static files
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Middleware to parse JSON requests
 app.use(express.json());

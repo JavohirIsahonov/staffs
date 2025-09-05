@@ -1,14 +1,12 @@
-const mognoose = require('mongoose');
-const Schema = mognoose.Schema;
+const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
 
 const Message = new Schema(
-    {
-        message: {
-            type: String,
-            required: true
-        }
-    },
-    { timestamps: true }
-)
+  {
+    message: { type: String, required: true },
+    image: { type: String }, // optional image
+  },
+  { timestamps: true }
+);
 
-module.exports = mognoose.model('Message', Message)
+module.exports = mongoose.model("Message", Message);
