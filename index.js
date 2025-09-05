@@ -3,10 +3,13 @@ const app = express();
 const dotenv = require('dotenv');
 const connectDB = require('./config/db');
 const userRoutes = require('./routes/user.routes');
+const messageRoutes = require('./routes/message.routes');
 const cors = require('cors');
 
 // Enable CORS for all routes
 app.use(cors());
+
+
 
 // Load environment variables from .env file
 dotenv.config();
@@ -19,6 +22,9 @@ app.use(express.json());
 
 // User routes
 app.use('/api', userRoutes);
+
+// Message routes
+app.use('/api/messages', messageRoutes);
 
 // Define the port
 const PORT = process.env.PORT || 5000;
