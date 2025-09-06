@@ -1,8 +1,7 @@
 const Message = require("../models/message.model");
 const User = require("../models/user.model");
-const { sendMessage } = require("../utils/telegram");
+const { sendMessage, sendPhoto } = require("../utils/telegram");
 
-// Create and send message to all users
 // Create and send message to all users
 exports.createAndSendToAll = async (req, res) => {
   try {
@@ -18,6 +17,7 @@ exports.createAndSendToAll = async (req, res) => {
 
     const htmlContent = req.body.message || req.body.content;
 
+    // HTML → Plain text converter
     const plainTextContent = htmlContent
       .replace(/<\/p>/g, "\n\n")
       .replace(/<br\s*\/?>/gi, "\n")
@@ -38,12 +38,13 @@ exports.createAndSendToAll = async (req, res) => {
     // Agar image kelgan bo‘lsa
     let imagePath = null;
     if (req.file) {
-      imagePath = `/uploads/${req.file.filename}`; // static serve qilamiz
+      imagePath = `/uploads/${req.file.filename}`;
     }
 
+    // DBga saqlash
     const newMessage = new Message({
       message: htmlContent,
-      image: imagePath, // modelga qo‘shish kerak
+      image: imagePath,
     });
 
     const savedMessage = await newMessage.save();
@@ -56,7 +57,17 @@ exports.createAndSendToAll = async (req, res) => {
 
     for (const user of users) {
       if (user.telegram_id) {
-        const result = await sendMessage(user.telegram_id, plainTextContent);
+        let result;
+
+        if (imagePath) {
+          // Rasm bilan yuborish
+          const fullUrl = `${req.protocol}://${req.get("host")}${imagePath}`;
+          result = await sendPhoto(user.telegram_id, fullUrl, plainTextContent);
+        } else {
+          // Faqat text yuborish
+          result = await sendMessage(user.telegram_id, plainTextContent);
+        }
+
         if (result.error) {
           failCount++;
           results.push({ user_id: user._id, status: "failed" });
@@ -80,11 +91,12 @@ exports.createAndSendToAll = async (req, res) => {
   } catch (err) {
     console.error("Error creating and sending message:", err);
     res.status(500).send({
-      message: err.message || "Some error occurred while creating and sending message.",
+      message:
+        err.message ||
+        "Some error occurred while creating and sending message.",
     });
   }
 };
-
 
 // Get all messages
 exports.getAllMessages = async (req, res) => {
@@ -93,7 +105,8 @@ exports.getAllMessages = async (req, res) => {
     res.send(messages);
   } catch (err) {
     res.status(500).send({
-      message: err.message || "Some error occurred while retrieving messages.",
+      message:
+        err.message || "Some error occurred while retrieving messages.",
     });
   }
 };
